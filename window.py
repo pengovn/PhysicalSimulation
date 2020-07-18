@@ -21,4 +21,4 @@ class Window(pyglet.window.Window):
         self.space.debug_draw(self.draw_option)
         
     def update (self, dt):
-        pass
+        self.space.step(dt)
