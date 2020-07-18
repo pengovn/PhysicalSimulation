@@ -1,7 +1,15 @@
 import pymunk
 import pyglet
-import window
+from window import Window
+from physics import Space
+
 
 if __name__ == "__main__":
-    win = window.Window()
+    space = Space()
+    body = pymunk.Body()
+    body.position = 300, 300
+    circle = pymunk.Circle(body, 50)
+    space.add(body, circle)
+    
+    window = Window(space)
     pyglet.app.run()
