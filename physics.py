@@ -10,23 +10,6 @@ class Space(pymunk.Space):
         super().__init__()
         self.gravity = GRAVITY
         self.speed = 1
-        
-        walls_width = 50
-        walls_pos = [
-            [(-walls_width, 0), (WINDOW_SIZE[0] + walls_width, 0), (WINDOW_SIZE[0] + walls_width, -walls_width), (-walls_width, -walls_width)],
-            [(-walls_width, WINDOW_SIZE[1]), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1]), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1] + walls_width), (-walls_width, WINDOW_SIZE[1] + walls_width)],
-            [(0, -walls_width), (0, WINDOW_SIZE[1] + walls_width), (-walls_width, WINDOW_SIZE[1] + walls_width), (-walls_width, -walls_width)],
-            [(WINDOW_SIZE[0], -walls_width), (WINDOW_SIZE[0], WINDOW_SIZE[1] + walls_width), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1] + walls_width), (WINDOW_SIZE[0] + walls_width, -walls_width)]
-        ]
-        self.walls = []
-        for wall_pos in walls_pos:
-            body = pymunk.Body(body_type=pymunk.Body.STATIC)
-            shape = pymunk.Poly(body, wall_pos)
-            shape.elasticity = 1
-            shape.friction = 0
-            self.add(body, shape)
-            self.walls.append((body, shape))
-
 
 def create_particule(mass: float, charge: float, position: tuple, velocity: tuple, radius: float) -> (pymunk.Body, pymunk.Circle):
     moment = pymunk.moment_for_circle(mass, 0, radius)
