@@ -9,19 +9,20 @@ class Space(pymunk.Space):
     def __init__(self):
         super().__init__()
         self.gravity = GRAVITY
+        self.speed = 1
         
-        walls_width = 10
+        walls_width = 50
         walls_pos = [
-            [(0, 0), (WINDOW_SIZE[0], 0), (WINDOW_SIZE[0], -walls_width), (0, -walls_width)],
-            [(0, WINDOW_SIZE[1]), (WINDOW_SIZE[0], WINDOW_SIZE[1]), (WINDOW_SIZE[0], WINDOW_SIZE[1] + walls_width), (0, WINDOW_SIZE[1] + walls_width)],
-            [(0, 0), (0, WINDOW_SIZE[1]), (-walls_width, WINDOW_SIZE[1]), (-walls_width, 0)],
-            [(WINDOW_SIZE[0], 0), (WINDOW_SIZE[0], WINDOW_SIZE[1]), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1]), (WINDOW_SIZE[0] + walls_width, 0)]
+            [(-walls_width, 0), (WINDOW_SIZE[0] + walls_width, 0), (WINDOW_SIZE[0] + walls_width, -walls_width), (-walls_width, -walls_width)],
+            [(-walls_width, WINDOW_SIZE[1]), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1]), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1] + walls_width), (-walls_width, WINDOW_SIZE[1] + walls_width)],
+            [(0, -walls_width), (0, WINDOW_SIZE[1] + walls_width), (-walls_width, WINDOW_SIZE[1] + walls_width), (-walls_width, -walls_width)],
+            [(WINDOW_SIZE[0], -walls_width), (WINDOW_SIZE[0], WINDOW_SIZE[1] + walls_width), (WINDOW_SIZE[0] + walls_width, WINDOW_SIZE[1] + walls_width), (WINDOW_SIZE[0] + walls_width, -walls_width)]
         ]
         self.walls = []
         for wall_pos in walls_pos:
             body = pymunk.Body(body_type=pymunk.Body.STATIC)
             shape = pymunk.Poly(body, wall_pos)
-            shape.elasticity = 0.1
+            shape.elasticity = 1
             shape.friction = 0
             self.add(body, shape)
             self.walls.append((body, shape))
@@ -39,12 +40,18 @@ def create_particule(mass: float, charge: float, position: tuple, velocity: tupl
 
 
 def create_electron(position: tuple, velocity: tuple, radius: float) -> (pymunk.Body, pymunk.Circle):
-    return create_particule(ELECTRON_MASS, ELECTRON_CHARGE, position, velocity, radius)
+    particule = create_particule(ELECTRON_MASS, ELECTRON_CHARGE, position, velocity, radius)
+    particule[1].color = 0, 0, 255
+    return particule
 
 
 def create_proton(position: tuple, velocity: tuple, radius: float) -> (pymunk.Body, pymunk.Circle):
-    return create_particule(PROTON_MASS, PROTON_CHARGE, position, velocity, radius)
+    particule = create_particule(PROTON_MASS, PROTON_CHARGE, position, velocity, radius)
+    particule[1].color = 255, 0, 0
+    return particule
 
 
 def create_neutron(position: tuple, velocity: tuple, radius: float) -> (pymunk.Body, pymunk.Circle):
-    return create_particule(NEUTRON_MASS, NEUTRON_CHARGE, position, velocity, radius)
+    particule = create_particule(NEUTRON_MASS, NEUTRON_CHARGE, position, velocity, radius)
+    particule[1].color = 0, 255, 0
+    return particule
