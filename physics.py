@@ -42,17 +42,23 @@ def create_neutron(position: tuple, velocity: tuple, radius: float) -> (pymunk.B
 
 
 def apply_gravity(elements: list, dt):
-    list_vec = [Vec2d() for i in range(len(elements))]
     for i, current_element in enumerate(elements):
         for j, element in enumerate(elements[i+1:]):
+            cur_el_pos = current_element[0].position
             el_pos = element[0].position
-            if abs(current_element[0].position.x - el_pos.x) > WINDOW_SIZE[0]/2:
-                el_pos.x *= -1
-            if abs(current_element[0].position.y - el_pos.y) > WINDOW_SIZE[1]/2:
-                el_pos.y *= -1
-            d2 = current_element[0].position.get_dist_sqrd(el_pos)
+            if abs(cur_el_pos.x - el_pos.x) > WINDOW_SIZE[0]/2:
+                if max((cur_el_pos.x, el_pos.x)) == el_pos.x:
+                    el_pos.x -= WINDOW_SIZE[0]
+                else:
+                    cur_el_pos.x -= WINDOW_SIZE[0]
+            if abs(cur_el_pos.y - el_pos.y) > WINDOW_SIZE[1]/2:
+                if max((cur_el_pos.y, el_pos.y)) == el_pos.y:
+                    el_pos.y -= WINDOW_SIZE[1]
+                else:
+                    cur_el_pos.y -= WINDOW_SIZE[1]
+            d2 = cur_el_pos.get_dist_sqrd(el_pos)
             f = GRAVITATIONAL_CONSTANT * (current_element[0].mass * element[0].mass) / d2
-            acc = Vec2d(current_element[0].position.x - el_pos.x, current_element[0].position.y - el_pos.y).normalized() * f
-            current_element[0].velocity -= acc * dt
-            element[0].velocity += acc * dt
-            print(acc, end="\t\t\r")
+            f_acc = Vec2d(cur_el_pos.x - el_pos.x, cur_el_pos.y - el_pos.y).normalized() * f
+            current_element[0].velocity -= f_acc/current_element[0].mass * dt
+            element[0].velocity += f_acc/element[0].mass * dt
+            print(round(f_acc.x, 2), round(f_acc.y, 2), end="\t\r")
