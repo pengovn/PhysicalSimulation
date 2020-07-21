@@ -7,7 +7,13 @@ import random
 from constant import WINDOW_SIZE
 
 
+fps_mean = 0
+count = 0
 def update(dt):
+    global fps_mean, count
+    fps_mean += 1/dt
+    count += 1
+    print(round(fps_mean/count), end="\t\r")
     space.step(dt * space.speed)
     apply_gravity(elements, dt * space.speed)
     for el in elements:

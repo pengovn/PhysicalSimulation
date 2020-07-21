@@ -1,5 +1,5 @@
 #   Window constants
-WINDOW_SIZE = 960, 540
+WINDOW_SIZE = 720, 720
 CAPTION = "Physical Simulation"
 FULLSCREEN = False
 MOUSE_VISIBLE = True

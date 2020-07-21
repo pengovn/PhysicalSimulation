@@ -18,7 +18,7 @@ def create_particule(mass: float, charge: float, position: tuple, velocity: tupl
     body.position = position
     body.velocity = velocity
     shape = pymunk.Circle(body, radius)
-    shape.elasticity = 1
+    shape.elasticity = 0.5
     shape.friction = 0
     return body, shape
 
@@ -41,7 +41,8 @@ def create_neutron(position: tuple, velocity: tuple, radius: float) -> (pymunk.B
     return particule
 
 
-def apply_gravity(elements: list, dt):
+def apply_gravity(elements: list, dt: float):
+    MAX_GRAVITY_RANGE_SQRD = (WINDOW_SIZE[0]/round(len(elements)/10+1)) ** 2
     for i, current_element in enumerate(elements):
         for j, element in enumerate(elements[i+1:]):
             cur_el_pos = current_element[0].position
@@ -57,8 +58,9 @@ def apply_gravity(elements: list, dt):
                 else:
                     cur_el_pos.y -= WINDOW_SIZE[1]
             d2 = cur_el_pos.get_dist_sqrd(el_pos)
+            if d2 > MAX_GRAVITY_RANGE_SQRD:
+                continue
             f = GRAVITATIONAL_CONSTANT * (current_element[0].mass * element[0].mass) / d2
             f_acc = Vec2d(cur_el_pos.x - el_pos.x, cur_el_pos.y - el_pos.y).normalized() * f
             current_element[0].velocity -= f_acc/current_element[0].mass * dt
             element[0].velocity += f_acc/element[0].mass * dt
-            print(round(f_acc.x, 2), round(f_acc.y, 2), end="\t\r")
