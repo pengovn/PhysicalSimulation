@@ -1,6 +1,6 @@
 import pymunk
 from pymunk.vec2d import Vec2d
-from constant import (GRAVITY, WINDOW_SIZE, GRAVITATIONAL_CONSTANT,
+from constant import (GRAVITY, WINDOW_SIZE, GRAVITATIONAL_CONSTANT, ELECTROMAGNETIC_CONSTANT,
                       ELECTRON_CHARGE, PROTON_CHARGE, NEURTON_CHARGE,
                       ELECTRON_MASS, PROTON_MASS, NEUTRON_MASS)
 import pymunkoptions
@@ -17,6 +17,7 @@ def create_particule(mass: float, charge: float, position: tuple, velocity: tupl
     body = pymunk.Body(mass, moment)
     body.position = position
     body.velocity = velocity
+    body.charge = charge
     shape = pymunk.Circle(body, radius)
     shape.elasticity = 0.5
     shape.friction = 0
@@ -60,7 +61,34 @@ def apply_gravity(elements: list, dt: float):
             d2 = cur_el_pos.get_dist_sqrd(el_pos)
             if d2 > MAX_GRAVITY_RANGE_SQRD:
                 continue
+            
             f = GRAVITATIONAL_CONSTANT * (current_element[0].mass * element[0].mass) / d2
+            f_acc = Vec2d(cur_el_pos.x - el_pos.x, cur_el_pos.y - el_pos.y).normalized() * f
+            current_element[0].velocity -= f_acc/current_element[0].mass * dt
+            element[0].velocity += f_acc/element[0].mass * dt
+
+
+def apply_electromagnetic(elements: list, dt: float):
+    MAX_ELECTROMAGNETIC_RANGE_SQRD = WINDOW_SIZE[0] ** 2 #(WINDOW_SIZE[0]/round(len(elements)/10+1)) ** 2
+    for i, current_element in enumerate(elements):
+        for j, element in enumerate(elements[i+1:]):
+            cur_el_pos = current_element[0].position
+            el_pos = element[0].position
+            if abs(cur_el_pos.x - el_pos.x) > WINDOW_SIZE[0]/2:
+                if max((cur_el_pos.x, el_pos.x)) == el_pos.x:
+                    el_pos.x -= WINDOW_SIZE[0]
+                else:
+                    cur_el_pos.x -= WINDOW_SIZE[0]
+            if abs(cur_el_pos.y - el_pos.y) > WINDOW_SIZE[1]/2:
+                if max((cur_el_pos.y, el_pos.y)) == el_pos.y:
+                    el_pos.y -= WINDOW_SIZE[1]
+                else:
+                    cur_el_pos.y -= WINDOW_SIZE[1]
+            d2 = cur_el_pos.get_dist_sqrd(el_pos)
+            if d2 > MAX_ELECTROMAGNETIC_RANGE_SQRD:
+                continue
+            
+            f = -ELECTROMAGNETIC_CONSTANT * (current_element[0].charge * element[0].charge) / d2
             f_acc = Vec2d(cur_el_pos.x - el_pos.x, cur_el_pos.y - el_pos.y).normalized() * f
             current_element[0].velocity -= f_acc/current_element[0].mass * dt
             element[0].velocity += f_acc/element[0].mass * dt
